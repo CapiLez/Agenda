@@ -47,12 +47,22 @@ app.get('/api/persons/:id', (request, response) => {
 });
 
 // Eliminar una persona por ID
+// Eliminar una persona por ID
 app.delete('/api/persons/:id', (request, response) => {
-    Person.findByIdAndRemove(request.params.id)
-        .then(() => response.status(204).end())
+    const id = request.params.id;
+
+    Person.findByIdAndDelete(id) // Cambiado a Person
+        .then((result) => {
+            if (result) {
+                console.log(`Person with id ${id} deleted.`);
+                response.status(204).end();
+            } else {
+                response.status(404).send({ error: 'Person not found' });
+            }
+        })
         .catch((error) => {
-            console.error(error);
-            response.status(400).send({ error: 'malformatted id' });
+            console.error('Error deleting person:', error.message);
+            response.status(400).send({ error: 'Invalid ID format or delete failed' });
         });
 });
 
